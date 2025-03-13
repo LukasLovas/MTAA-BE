@@ -1,5 +1,5 @@
 CREATE TABLE transaction(
-    id bigint,
+    id BIGSERIAL PRIMARY KEY,
     label varchar(150),
     amount bigint
 )
