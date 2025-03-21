@@ -34,6 +34,11 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getTransactionById(id));
     }
 
+    @GetMapping("/budget/{budgetId}")
+    public List<Transaction> getTransactionsByBudgetId(@PathVariable Integer budgetId) {
+        return transactionService.getTransactionsByBudgetId(budgetId);
+    }
+
     @PutMapping("{id}")
     public ResponseEntity<Transaction> updateTransaction(@PathVariable Integer id, @RequestBody @Validated TransactionDTO transactionInput) {
         return ResponseEntity.ok(transactionService.updateTransaction(id, transactionInput));

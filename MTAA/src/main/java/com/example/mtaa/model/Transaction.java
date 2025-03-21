@@ -38,8 +38,9 @@ public class Transaction {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @Column(name = "budget_id")
-    private Long budgetId;
+    @ManyToOne
+    @JoinColumn(name = "budget_id")
+    private Budget budget;
 
     @Column(name = "frequency")
     private FrequencyEnum frequencyEnum;

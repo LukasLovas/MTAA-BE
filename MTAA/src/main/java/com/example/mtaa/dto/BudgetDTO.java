@@ -1,0 +1,33 @@
+package com.example.mtaa.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.Data;
+
+import java.time.LocalDate;
+
+@Data
+@JsonTypeName("BudgetDTO")
+public class BudgetDTO {
+    @JsonProperty("label")
+    private String label;
+    @JsonProperty("amount")
+    private Long amount;
+    @JsonProperty("start_date")
+    private LocalDate startDate;
+    @JsonProperty("interval_value")
+    private Integer intervalValue;
+    @JsonProperty("interval_enum")
+    private String intervalEnum;
+
+    public BudgetDTO() {
+    }
+
+    public BudgetDTO(String label, Long amount, LocalDate startDate, Integer intervalValue, String intervalEnum) {
+        this.label = label;
+        this.amount = amount;
+        this.startDate = startDate;
+        this.intervalValue = intervalValue;
+        this.intervalEnum = intervalEnum;
+    }
+}
