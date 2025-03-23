@@ -22,7 +22,8 @@ public class TransactionService {
         this.transactionRepository = transactionRepository;
     }
 
-    public Transaction addTransaction(Transaction transaction){
+    public Transaction addTransaction(TransactionDTO transactionInput){
+        Transaction transaction = convertToTransaction(transactionInput);
         return transactionRepository.save(transaction);
     }
 
@@ -66,7 +67,7 @@ public class TransactionService {
         transaction.setAttachmentId(input.getAttachmentId());
         transaction.setBudget(new Budget(input.getBudgetId(), null, null, null, null, null));
         transaction.setCategoryId(input.getCategoryId());
-        transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum()));
+        transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum().toUpperCase()));
         transaction.setNote(input.getNote());
         transaction.setTransactionTypeEnum(TransactionTypeEnum.valueOf(input.getTransactionTypeEnum()));
         return transaction;

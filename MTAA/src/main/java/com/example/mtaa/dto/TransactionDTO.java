@@ -2,6 +2,8 @@ package com.example.mtaa.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,22 +11,44 @@ import java.time.LocalDateTime;
 @Data
 @JsonTypeName("TransactionDTO")
 public class TransactionDTO {
+
+    @NotNull
     @JsonProperty("label")
     private String label;
+
+    @NotNull
     @JsonProperty("amount")
     private Long amount;
+
+    @NotNull
     @JsonProperty("time")
     private LocalDateTime timestamp;
+
+    @NotNull
     @JsonProperty("transaction_type")
+    @Schema(
+            description = "Transaction Type - ENUM values",
+            allowableValues = {"EXPENSE", "INCOME"}
+    )
     private String transactionTypeEnum;
+
     @JsonProperty("category_id")
     private Long categoryId;
+
     @JsonProperty("budget_id")
     private Long budgetId;
+
+    @NotNull
     @JsonProperty("frequency")
+    @Schema(
+            description = "Frequency Type - ENUM values",
+            allowableValues = {"DEFAULT", "UPCOMING", "SUBSCRIPTION"}
+    )
     private String frequencyEnum;
+
     @JsonProperty("note")
     private String note;
+
     @JsonProperty("attachment_id")
     private Long attachmentId;
 

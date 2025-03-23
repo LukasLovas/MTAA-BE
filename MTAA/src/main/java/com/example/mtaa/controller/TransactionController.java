@@ -25,8 +25,8 @@ public class TransactionController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Transaction> addTransaction(@RequestBody @Validated Transaction transaction) {
-        return ResponseEntity.ok(transactionService.addTransaction(transaction));
+    public ResponseEntity<Transaction> addTransaction(@RequestBody @Validated TransactionDTO transactionInput) {
+        return ResponseEntity.ok(transactionService.addTransaction(transactionInput));
     }
 
     @GetMapping("/{id}")
