@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 public class TransactionDTO {
 
     @NotNull
+    @JsonProperty("user_id")
+    private Long userId;
+
+    @NotNull
     @JsonProperty("label")
     private String label;
 

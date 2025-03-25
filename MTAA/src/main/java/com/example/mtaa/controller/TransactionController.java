@@ -1,11 +1,14 @@
 package com.example.mtaa.controller;
 
+import com.example.mtaa.dto.CategorySpendingDTO;
 import com.example.mtaa.dto.TransactionDTO;
 import com.example.mtaa.model.Transaction;
 import com.example.mtaa.service.TransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -21,7 +24,34 @@ public class TransactionController {
 
     @GetMapping("")
     public List<Transaction> getAllTransactions() {
-        return transactionService.getAllTransactions();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        return transactionService.getAllTransactions(username);
+    }
+
+    @GetMapping("/expenses/today")
+    public List<CategorySpendingDTO> getExpensesToday() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        return transactionService.getExpensesToday(username);
+    }
+
+    @GetMapping("/expenses/week")
+    public List<CategorySpendingDTO> getExpensesWeek() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        return transactionService.getExpensesForWeek(username);
+    }
+
+    @GetMapping("/expenses/month")
+    public List<CategorySpendingDTO> getExpensesMonth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        return transactionService.getExpensesForMonth(username);
     }
 
     @PostMapping("")

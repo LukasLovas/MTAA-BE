@@ -10,6 +10,8 @@ import java.time.LocalDate;
 @Data
 @JsonTypeName("BudgetDTO")
 public class BudgetDTO {
+    @JsonProperty("user_id")
+    private Long userId;
     @JsonProperty("label")
     private String label;
     @JsonProperty("amount")
@@ -28,7 +30,8 @@ public class BudgetDTO {
     public BudgetDTO() {
     }
 
-    public BudgetDTO(String label, Long amount, LocalDate startDate, Integer intervalValue, String intervalEnum) {
+    public BudgetDTO(Long userId, String label, Long amount, LocalDate startDate, Integer intervalValue, String intervalEnum) {
+        this.userId = userId;
         this.label = label;
         this.amount = amount;
         this.startDate = startDate;

@@ -3,6 +3,7 @@ package com.example.mtaa.service;
 import com.example.mtaa.dto.BudgetDTO;
 import com.example.mtaa.model.Budget;
 import com.example.mtaa.model.CommonException;
+import com.example.mtaa.model.User;
 import com.example.mtaa.model.enums.IntervalEnum;
 import com.example.mtaa.repository.BudgetRepository;
 import org.springframework.http.HttpStatus;
@@ -42,12 +43,13 @@ public class BudgetService {
         budgetRepository.deleteById(id);
     }
 
-    public List<Budget> getAllBudgets() {
-        return budgetRepository.findAll();
+    public List<Budget> getAllBudgets(String username) {
+        return budgetRepository.findByUser_Username(username);
     }
 
     private Budget convertToBudget(BudgetDTO input) {
         Budget budget = new Budget();
+        budget.setUser(new User(input.getUserId(), null, null, true));
         budget.setLabel(input.getLabel());
         budget.setAmount(input.getAmount());
         budget.setIntervalValue(input.getIntervalValue());
@@ -58,6 +60,7 @@ public class BudgetService {
 
     private BudgetDTO convertToBudgetDTO(Budget budget) {
         BudgetDTO budgetDTO = new BudgetDTO();
+        budgetDTO.setUserId(budget.getUser().getId());
         budgetDTO.setLabel(budget.getLabel());
         budgetDTO.setAmount(budget.getAmount());
         budgetDTO.setIntervalValue(budget.getIntervalValue());

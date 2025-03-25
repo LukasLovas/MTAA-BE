@@ -25,6 +25,11 @@ public class Transaction {
     private Integer id;
 
     @NotNull
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @NotNull
     @Column(name = "label")
     private String label;
 
@@ -41,8 +46,9 @@ public class Transaction {
     @Column(name = "transaction_type")
     private TransactionTypeEnum transactionTypeEnum;
 
-    @Column(name = "category_id")
-    private Long categoryId;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @ManyToOne
     @JoinColumn(name = "budget_id")

@@ -4,6 +4,8 @@ import com.example.mtaa.dto.BudgetDTO;
 import com.example.mtaa.model.Budget;
 import com.example.mtaa.service.BudgetService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +22,10 @@ public class BudgetController {
 
     @GetMapping("")
     public List<Budget> getAllBudgets() {
-        return budgetService.getAllBudgets();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        return budgetService.getAllBudgets(username);
     }
 
     @GetMapping("/{id}")
