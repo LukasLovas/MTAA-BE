@@ -8,16 +8,14 @@ import java.util.Date;
 
 public class JwtUtil {
 
-    // In production, store the key securely!
     private static final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    // Expiration: e.g., 24 hours
-    private static final long expirationMillis = 24 * 60 * 60 * 1000;
+    private static final long expirationTime = 24 * 60 * 60 * 1000;
 
     public static String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMillis))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(key)
                 .compact();
     }
@@ -39,7 +37,6 @@ public class JwtUtil {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            // log error as needed
             return false;
         }
     }
