@@ -22,7 +22,7 @@ public class Transaction {
     @Id
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @NotNull
     @ManyToOne
@@ -62,6 +62,6 @@ public class Transaction {
     @Column(name = "note")
     private String note;
 
-    @Column(name = "attachment_id")
-    private Long attachmentId;
+    @Column(name = "filename")
+    private String filename;
 }

@@ -65,7 +65,7 @@ public class TransactionController {
     }
 
     @GetMapping("/budget/{budgetId}")
-    public List<Transaction> getTransactionsByBudgetId(@PathVariable Integer budgetId) {
+    public List<Transaction> getTransactionsByBudgetId(@PathVariable Long budgetId) {
         return transactionService.getTransactionsByBudgetId(budgetId);
     }
 

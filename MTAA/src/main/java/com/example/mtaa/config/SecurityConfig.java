@@ -1,4 +1,4 @@
-package com.example.mtaa;
+package com.example.mtaa.config;
 
 import com.example.mtaa.utils.JwtAuthenticationFilter;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;

@@ -17,7 +17,7 @@ import java.util.Optional;
 @Service
 public class TransactionService {
 
-    private TransactionRepository transactionRepository;
+    private final TransactionRepository transactionRepository;
 
     public TransactionService(TransactionRepository transactionRepository) {
         this.transactionRepository = transactionRepository;
@@ -119,7 +119,7 @@ public class TransactionService {
         return categorySpendingDTOs;
     }
 
-    public List<Transaction> getTransactionsByBudgetId(Integer budgetId) {
+    public List<Transaction> getTransactionsByBudgetId(Long budgetId) {
         return transactionRepository.findByBudgetId(budgetId);
     }
 
@@ -129,7 +129,7 @@ public class TransactionService {
         transaction.setLabel(input.getLabel());
         transaction.setAmount(input.getAmount());
         transaction.setCreationDate(input.getTimestamp());
-        transaction.setAttachmentId(input.getAttachmentId());
+        transaction.setFilename(input.getFilename());
         transaction.setBudget(new Budget(input.getBudgetId(), null, null, null, null, null, null));
         transaction.setCategory(new Category(input.getCategoryId(), null, null));
         transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum().toUpperCase()));
@@ -144,7 +144,7 @@ public class TransactionService {
         transactionDTO.setLabel(transaction.getLabel());
         transactionDTO.setAmount(transaction.getAmount());
         transactionDTO.setTimestamp(transaction.getCreationDate());
-        transactionDTO.setAttachmentId(transaction.getAttachmentId());
+        transactionDTO.setFilename(transaction.getFilename());
         transactionDTO.setBudgetId(transaction.getBudget().getId());
         transactionDTO.setCategoryId(transaction.getCategory().getId());
         transactionDTO.setFrequencyEnum(transaction.getFrequencyEnum().name());

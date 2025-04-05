@@ -10,5 +10,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 
     public List<Transaction> findByUser_Username(String username);
     public List<Transaction> findByUser_UsernameAndCreationDateBetween(String username, LocalDateTime start, LocalDateTime end);
-    public List<Transaction> findByBudgetId(Integer budgetId);
+    public List<Transaction> findByBudgetId(Long budgetId);
 }

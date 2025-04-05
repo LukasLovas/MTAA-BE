@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/MTAA/MTAA.iml" filepath="$PROJECT_DIR$/MTAA/MTAA.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/MTAA-BE.iml" filepath="$PROJECT_DIR$/.idea/MTAA-BE.iml" />
     </modules>
   </component>
