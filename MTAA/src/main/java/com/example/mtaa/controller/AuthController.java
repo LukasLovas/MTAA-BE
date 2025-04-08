@@ -2,6 +2,7 @@ package com.example.mtaa.controller;
 
 import com.example.mtaa.dto.LoginDTO;
 import com.example.mtaa.dto.TokenDTO;
+import com.example.mtaa.dto.UserDTO;
 import com.example.mtaa.model.User;
 import com.example.mtaa.service.UserService;
 import com.example.mtaa.utils.JwtUtil;
@@ -36,13 +37,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        User registeredUser = userService.registerUser(user);
+    public ResponseEntity<User> registerUser(@RequestBody UserDTO userInput) {
+        User registeredUser = userService.registerUser(userInput);
         return ResponseEntity.ok(registeredUser);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
-        return ResponseEntity.ok("Logged out successfully (client must discard token)");
+        return ResponseEntity.ok("Logged out successfully.");
     }
 }
