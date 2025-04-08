@@ -1,5 +1,7 @@
 package com.example.mtaa.service;
 
+import com.example.mtaa.dto.UserDTO;
+import com.example.mtaa.model.User;
 import com.example.mtaa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;
@@ -20,10 +22,12 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public com.example.mtaa.model.User registerUser(com.example.mtaa.model.User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new RuntimeException("User already exists with username: " + user.getUsername());
+    public com.example.mtaa.model.User registerUser(UserDTO userInput) {
+        if (userRepository.findByUsername(userInput.getUsername()).isPresent()) {
+            throw new RuntimeException("User already exists with username: " + userInput.getUsername());
         }
+        User user = new User();
+        user.setUsername(userInput.getUsername());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setEnabled(true);
         return userRepository.save(user);
