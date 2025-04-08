@@ -51,11 +51,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                                 "/swagger-ui.html",
                                 "/swagger-ui/index.html",
                                 "/swagger-resources/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/auth/login",
+                                "/auth/logout",
+                                "/auth/register"
                         ).permitAll()
-                        // Permit authentication endpoints (login, logout, register)
-                        .requestMatchers("/auth/login", "/auth/logout", "/auth/register").permitAll()
-                        // Secure all other endpoints
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

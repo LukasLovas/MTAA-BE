@@ -28,7 +28,7 @@ public class UserService implements UserDetailsService {
         }
         User user = new User();
         user.setUsername(userInput.getUsername());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.encode(userInput.getPassword()));
         user.setEnabled(true);
         return userRepository.save(user);
     }
