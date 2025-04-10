@@ -18,6 +18,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
 
+
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UserService userService) {
         this.authenticationManager = authenticationManager;
@@ -32,7 +33,8 @@ public class AuthController {
                         loginRequest.getPassword()
                 )
         );
-        String token = JwtUtil.generateToken(loginRequest.getUsername());
+        User user = userService.findUserByUsername(loginRequest.getUsername());
+        String token = JwtUtil.generateToken(loginRequest.getUsername(), user.getId());
         return ResponseEntity.ok(new TokenDTO(token));
     }
 

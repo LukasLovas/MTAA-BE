@@ -24,7 +24,7 @@ public class CategoryService {
 
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id).orElseThrow(() ->
-                new CommonException(HttpStatus.NOT_FOUND, "Category not found"));
+                new CommonException(HttpStatus.NOT_FOUND, "Category with ID " + id + " not found"));
     }
 
     public Category addCategory(CategoryDTO categoryDTO) {

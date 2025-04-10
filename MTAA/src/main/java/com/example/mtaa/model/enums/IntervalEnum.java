@@ -6,7 +6,7 @@ public enum IntervalEnum {
     WEEK("WEEK"),
     MONTH("MONTH"),
     YEAR("YEAR"),
-
+    NEVER("NEVER")
     ;
 
     IntervalEnum(String value) {}

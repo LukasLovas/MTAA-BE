@@ -4,6 +4,7 @@ import com.example.mtaa.dto.UserDTO;
 import com.example.mtaa.model.User;
 import com.example.mtaa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,5 +45,17 @@ public class UserService implements UserDetailsService {
         );
     }
 
+    public User findUserByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
 
+    public User findUserById(Long id){
+        return userRepository.findUserById(id).orElseThrow(() -> new UsernameNotFoundException("User with ID " + id + "not found: "));
+    }
+
+    public User findCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
 }

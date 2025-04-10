@@ -6,12 +6,16 @@ import com.example.mtaa.model.CommonException;
 import com.example.mtaa.model.User;
 import com.example.mtaa.model.enums.IntervalEnum;
 import com.example.mtaa.repository.BudgetRepository;
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@Slf4j
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
@@ -25,9 +29,9 @@ public class BudgetService {
         return budgetRepository.save(budget);
     }
 
-    public Budget getBudgetById(int budgetId) {
+    public Budget getBudgetById(Integer budgetId) {
         return budgetRepository.findById(budgetId).orElseThrow(() ->
-                new CommonException(HttpStatus.NOT_FOUND, "Budget not found"));
+                new CommonException(HttpStatus.NOT_FOUND, "Budget with ID " + budgetId + "not found"));
     }
 
     public Budget updateBudget(int id, BudgetDTO input) {
@@ -67,5 +71,35 @@ public class BudgetService {
         budgetDTO.setIntervalEnum(budget.getIntervalEnum().name());
         budgetDTO.setStartDate(budget.getStartDate());
         return budgetDTO;
+    }
+
+
+    @Transactional
+    public void resetBudgets() {
+        List<Budget> budgets = budgetRepository.findAll();
+        LocalDate today = LocalDate.now();
+
+        for (Budget budget : budgets) {
+            if (shouldResetBudget(budget, today)) {
+                log.info("Resetting budget {} for user {}", budget.getLabel(), budget.getUser().getId());
+                budget.setAmount(budget.getInitialAmount());
+                budget.setLastResetDate(today);
+                budgetRepository.save(budget);
+            }
+        }
+    }
+
+    private boolean shouldResetBudget(Budget budget, LocalDate today) {
+        if (budget.getLastResetDate() == null) {
+            return true;
+        }
+
+        return switch (budget.getIntervalEnum()) {
+            case DAY -> budget.getLastResetDate().isBefore(today);
+            case WEEK -> budget.getLastResetDate().isBefore(today.minusWeeks(1));
+            case MONTH -> budget.getLastResetDate().isBefore(today.minusMonths(1));
+            case YEAR -> budget.getLastResetDate().isBefore(today.minusYears(1));
+            default -> false;
+        };
     }
 }

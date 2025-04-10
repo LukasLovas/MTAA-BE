@@ -37,10 +37,10 @@ public class TransactionDTO {
     private String transactionTypeEnum;
 
     @JsonProperty("category_id")
-    private Long categoryId;
+    private Integer categoryId;
 
     @JsonProperty("budget_id")
-    private Long budgetId;
+    private Integer budgetId;
 
     @NotNull
     @JsonProperty("frequency")
@@ -60,7 +60,7 @@ public class TransactionDTO {
     public TransactionDTO() {
     }
 
-    public TransactionDTO(String label, Long amount, LocalDateTime timestamp, String transactionTypeEnum, Long category_id, Long budget_id, String frequencyEnum, String note, String filename) {
+    public TransactionDTO(String label, Long amount, LocalDateTime timestamp, String transactionTypeEnum, Integer category_id, Integer budget_id, String frequencyEnum, String note, String filename) {
         this.label = label;
         this.amount = amount;
         this.timestamp = timestamp;

@@ -10,14 +10,12 @@ import java.time.LocalDate;
 @Data
 @Entity
 @Table(name = "budget")
-@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Budget {
 
     @Id
-    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -26,11 +24,12 @@ public class Budget {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "label")
     private String label;
 
-    @Column(name = "amount")
     private Long amount;
+
+    @Column(name = "initial_amount")
+    private Long initialAmount;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -40,4 +39,7 @@ public class Budget {
 
     @Column(name = "interval_enum")
     private IntervalEnum intervalEnum;
+
+    @Column(name = "last_reset_date")
+    private LocalDate lastResetDate;
 }

@@ -6,6 +6,7 @@ import com.example.mtaa.model.*;
 import com.example.mtaa.model.enums.FrequencyEnum;
 import com.example.mtaa.model.enums.TransactionTypeEnum;
 import com.example.mtaa.repository.TransactionRepository;
+import com.example.mtaa.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +19,17 @@ import java.util.Optional;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
+    private final BudgetService budgetService;
+    private final CategoryService categoryService;
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, UserService userService, BudgetService budgetService, CategoryService categoryService) {
         this.transactionRepository = transactionRepository;
+        this.userRepository = userRepository;
+        this.userService = userService;
+        this.budgetService = budgetService;
+        this.categoryService = categoryService;
     }
 
     public Transaction addTransaction(TransactionDTO transactionInput){
@@ -125,13 +134,13 @@ public class TransactionService {
 
     private Transaction convertToTransaction(TransactionDTO input) {
         Transaction transaction = new Transaction();
-        transaction.setUser(new User(input.getUserId(), null, null, true));
+        transaction.setUser(userService.findCurrentUser());
         transaction.setLabel(input.getLabel());
         transaction.setAmount(input.getAmount());
         transaction.setCreationDate(input.getTimestamp());
         transaction.setFilename(input.getFilename());
-        transaction.setBudget(new Budget(input.getBudgetId(), null, null, null, null, null, null));
-        transaction.setCategory(new Category(input.getCategoryId(), null, null));
+        transaction.setBudget(budgetService.getBudgetById(input.getBudgetId()));
+        transaction.setCategory(categoryService.getCategoryById(Long.valueOf(input.getCategoryId())));
         transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum().toUpperCase()));
         transaction.setNote(input.getNote());
         transaction.setTransactionTypeEnum(TransactionTypeEnum.valueOf(input.getTransactionTypeEnum()));
@@ -145,8 +154,8 @@ public class TransactionService {
         transactionDTO.setAmount(transaction.getAmount());
         transactionDTO.setTimestamp(transaction.getCreationDate());
         transactionDTO.setFilename(transaction.getFilename());
-        transactionDTO.setBudgetId(transaction.getBudget().getId());
-        transactionDTO.setCategoryId(transaction.getCategory().getId());
+        transactionDTO.setBudgetId(Math.toIntExact( transaction.getBudget().getId()));
+        transactionDTO.setCategoryId(Math.toIntExact(transaction.getCategory().getId()));
         transactionDTO.setFrequencyEnum(transaction.getFrequencyEnum().name());
         transactionDTO.setNote(transaction.getNote());
         transactionDTO.setTransactionTypeEnum(transaction.getTransactionTypeEnum().name());
