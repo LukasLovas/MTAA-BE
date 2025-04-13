@@ -37,11 +37,11 @@ public class TransactionService {
         return transactionRepository.save(transaction);
     }
 
-    public Transaction getTransactionById(int transactionId) {
+    public Transaction getTransactionById(Long transactionId) {
         return transactionRepository.findById(transactionId).orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND, "Transaction not found"));
     }
 
-    public Transaction updateTransaction(int id, TransactionDTO input) {
+    public Transaction updateTransaction(Long id, TransactionDTO input) {
         Optional<Transaction> transaction = transactionRepository.findById(id);
         Transaction transactionToUpdate;
         if (transaction.isPresent()) {
@@ -51,13 +51,13 @@ public class TransactionService {
 
             transactionRepository.save(transactionToUpdate);
         } else {
-            throw new CommonException(HttpStatus.NOT_FOUND, String.format("Transaction with ID %s does not exist", id));
+            throw new CommonException(HttpStatus.NOT_FOUND, String.format("Transaction with ID %s was not found.", id));
         }
 
         return transactionRepository.findById(id).get();
     }
 
-    public void deleteTransaction(Integer id) {
+    public void deleteTransaction(Long id) {
         transactionRepository.deleteById(id);
     }
 
@@ -140,7 +140,7 @@ public class TransactionService {
         transaction.setCreationDate(input.getTimestamp());
         transaction.setFilename(input.getFilename());
         transaction.setBudget(budgetService.getBudgetById(input.getBudgetId()));
-        transaction.setCategory(categoryService.getCategoryById(Long.valueOf(input.getCategoryId())));
+        transaction.setCategory(categoryService.getCategoryById(input.getCategoryId()));
         transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum().toUpperCase()));
         transaction.setNote(input.getNote());
         transaction.setTransactionTypeEnum(TransactionTypeEnum.valueOf(input.getTransactionTypeEnum()));
@@ -154,8 +154,8 @@ public class TransactionService {
         transactionDTO.setAmount(transaction.getAmount());
         transactionDTO.setTimestamp(transaction.getCreationDate());
         transactionDTO.setFilename(transaction.getFilename());
-        transactionDTO.setBudgetId(Math.toIntExact( transaction.getBudget().getId()));
-        transactionDTO.setCategoryId(Math.toIntExact(transaction.getCategory().getId()));
+        transactionDTO.setBudgetId(transaction.getBudget().getId());
+        transactionDTO.setCategoryId(transaction.getCategory().getId());
         transactionDTO.setFrequencyEnum(transaction.getFrequencyEnum().name());
         transactionDTO.setNote(transaction.getNote());
         transactionDTO.setTransactionTypeEnum(transaction.getTransactionTypeEnum().name());

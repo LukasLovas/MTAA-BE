@@ -3,7 +3,6 @@ package com.example.mtaa.service;
 import com.example.mtaa.dto.BudgetDTO;
 import com.example.mtaa.model.Budget;
 import com.example.mtaa.model.CommonException;
-import com.example.mtaa.model.User;
 import com.example.mtaa.model.enums.IntervalEnum;
 import com.example.mtaa.repository.BudgetRepository;
 import jakarta.transaction.Transactional;
@@ -19,9 +18,11 @@ import java.util.List;
 public class BudgetService {
 
     private final BudgetRepository budgetRepository;
+    private final UserService userService;
 
-    public BudgetService(BudgetRepository budgetRepository) {
+    public BudgetService(BudgetRepository budgetRepository, UserService userService) {
         this.budgetRepository = budgetRepository;
+        this.userService = userService;
     }
 
     public Budget addBudget(BudgetDTO input) {
@@ -29,21 +30,21 @@ public class BudgetService {
         return budgetRepository.save(budget);
     }
 
-    public Budget getBudgetById(Integer budgetId) {
+    public Budget getBudgetById(Long budgetId) {
         return budgetRepository.findById(budgetId).orElseThrow(() ->
                 new CommonException(HttpStatus.NOT_FOUND, "Budget with ID " + budgetId + "not found"));
     }
 
-    public Budget updateBudget(int id, BudgetDTO input) {
+    public Budget updateBudget(Long id, BudgetDTO input) {
         Budget budget = budgetRepository.findById(id).orElseThrow(() ->
-                new CommonException(HttpStatus.NOT_FOUND, String.format("Budget with ID %s does not exist", id)));
+                new CommonException(HttpStatus.NOT_FOUND, String.format("Budget with ID %s was not found", id)));
         budget.setLabel(input.getLabel());
         budget.setAmount(input.getAmount());
         budgetRepository.save(budget);
         return budget;
     }
 
-    public void deleteBudget(Integer id) {
+    public void deleteBudget(Long id) {
         budgetRepository.deleteById(id);
     }
 
@@ -53,26 +54,15 @@ public class BudgetService {
 
     private Budget convertToBudget(BudgetDTO input) {
         Budget budget = new Budget();
-        budget.setUser(new User(input.getUserId(), null, null, true));
+        budget.setUser(userService.findUserById(input.getUserId()));
         budget.setLabel(input.getLabel());
-        budget.setAmount(input.getAmount());
+        budget.setInitialAmount(input.getAmount());
         budget.setIntervalValue(input.getIntervalValue());
         budget.setIntervalEnum(IntervalEnum.valueOf(input.getIntervalEnum()));
         budget.setStartDate(input.getStartDate());
+        budget.setLastResetDate(null);
         return budget;
     }
-
-    private BudgetDTO convertToBudgetDTO(Budget budget) {
-        BudgetDTO budgetDTO = new BudgetDTO();
-        budgetDTO.setUserId(budget.getUser().getId());
-        budgetDTO.setLabel(budget.getLabel());
-        budgetDTO.setAmount(budget.getAmount());
-        budgetDTO.setIntervalValue(budget.getIntervalValue());
-        budgetDTO.setIntervalEnum(budget.getIntervalEnum().name());
-        budgetDTO.setStartDate(budget.getStartDate());
-        return budgetDTO;
-    }
-
 
     @Transactional
     public void resetBudgets() {

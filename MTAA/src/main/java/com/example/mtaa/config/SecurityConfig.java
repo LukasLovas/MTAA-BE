@@ -46,6 +46,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/v3/api-docs",
+                                "/v3/api-docs.yaml",
                                 "/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

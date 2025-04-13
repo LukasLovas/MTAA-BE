@@ -54,6 +54,10 @@ public class Transaction {
     @JoinColumn(name = "budget_id")
     private Budget budget;
 
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "frequency")
