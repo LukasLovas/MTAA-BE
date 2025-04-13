@@ -33,13 +33,17 @@ public class CategoryService {
     }
 
     public Category updateCategory(Long id, CategoryDTO categoryDTO) {
-        Category categoryToUpdate = categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category not found"));
+        Category categoryToUpdate = categoryRepository.findById(id).orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND,"Category not found"));
         categoryToUpdate.setLabel(categoryDTO.getLabel());
         return categoryRepository.save(categoryToUpdate);
     }
 
     public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+        try{
+            categoryRepository.deleteById(id);
+        }catch(Exception e){
+            throw new CommonException(HttpStatus.INTERNAL_SERVER_ERROR, "");
+        }
     }
 
     private Category convertToCategory(CategoryDTO categoryDTO) {

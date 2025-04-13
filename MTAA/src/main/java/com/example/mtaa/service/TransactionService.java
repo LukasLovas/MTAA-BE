@@ -58,7 +58,11 @@ public class TransactionService {
     }
 
     public void deleteTransaction(Long id) {
-        transactionRepository.deleteById(id);
+        try{
+            transactionRepository.deleteById(id);
+        }catch(Exception e){
+            throw new CommonException(HttpStatus.INTERNAL_SERVER_ERROR, "");
+        }
     }
 
     public List<Transaction> getAllTransactions(String username) {

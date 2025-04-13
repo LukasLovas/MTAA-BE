@@ -45,7 +45,11 @@ public class BudgetService {
     }
 
     public void deleteBudget(Long id) {
-        budgetRepository.deleteById(id);
+        try{
+            budgetRepository.deleteById(id);
+        }catch(Exception e){
+            throw new CommonException(HttpStatus.INTERNAL_SERVER_ERROR, "");
+        }
     }
 
     public List<Budget> getAllBudgets(String username) {
