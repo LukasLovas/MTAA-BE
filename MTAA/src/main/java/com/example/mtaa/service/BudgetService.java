@@ -40,8 +40,24 @@ public class BudgetService {
                 new CommonException(HttpStatus.NOT_FOUND, String.format("Budget with ID %s was not found", id)));
         budget.setLabel(input.getLabel());
         budget.setAmount(input.getAmount());
+        budget.setIntervalValue(input.getIntervalValue());
+        budget.setIntervalEnum(IntervalEnum.valueOf(input.getIntervalEnum()));
+        budget.setStartDate(input.getStartDate());
+
         budgetRepository.save(budget);
         return budget;
+    }
+
+    public Budget updateBudget(Long id, Budget budget) {
+        Budget existingBudget = budgetRepository.findById(id).orElseThrow(() ->
+                new CommonException(HttpStatus.NOT_FOUND, String.format("Budget with ID %s was not found", id)));
+        existingBudget.setLabel(budget.getLabel());
+        existingBudget.setAmount(budget.getAmount());
+        existingBudget.setIntervalValue(budget.getIntervalValue());
+        existingBudget.setIntervalEnum(budget.getIntervalEnum());
+        existingBudget.setStartDate(budget.getStartDate());
+
+        return budgetRepository.save(existingBudget);
     }
 
     public void deleteBudget(Long id) {

@@ -6,7 +6,6 @@ import com.example.mtaa.model.*;
 import com.example.mtaa.model.enums.FrequencyEnum;
 import com.example.mtaa.model.enums.TransactionTypeEnum;
 import com.example.mtaa.repository.TransactionRepository;
-import com.example.mtaa.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +18,13 @@ import java.util.Optional;
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
     private final BudgetService budgetService;
     private final CategoryService categoryService;
 
-    public TransactionService(TransactionRepository transactionRepository, UserRepository userRepository, UserService userService, BudgetService budgetService, CategoryService categoryService) {
+    public TransactionService(TransactionRepository transactionRepository, UserService userService,
+                              BudgetService budgetService, CategoryService categoryService) {
         this.transactionRepository = transactionRepository;
-        this.userRepository = userRepository;
         this.userService = userService;
         this.budgetService = budgetService;
         this.categoryService = categoryService;
@@ -34,6 +32,20 @@ public class TransactionService {
 
     public Transaction addTransaction(TransactionDTO transactionInput){
         Transaction transaction = convertToTransaction(transactionInput);
+
+        Budget budget = budgetService.getBudgetById(transactionInput.getBudgetId());
+        if(transaction.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
+            long newAmount;
+            if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
+                newAmount = budget.getAmount() - transaction.getAmount();
+            }
+            else{
+                newAmount = budget.getAmount() + transaction.getAmount();
+            }
+            budget.setAmount(newAmount);
+            budgetService.updateBudget(budget.getId(), budget);
+        }
+
         return transactionRepository.save(transaction);
     }
 
@@ -46,6 +58,22 @@ public class TransactionService {
         Transaction transactionToUpdate;
         if (transaction.isPresent()) {
             transactionToUpdate = transaction.get();
+
+            if(!transactionToUpdate.getAmount().equals(input.getAmount())){
+                Budget budget = budgetService.getBudgetById(input.getBudgetId());
+                if(transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
+                    long newAmount;
+                    if(transactionToUpdate.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
+                        newAmount = budget.getAmount() + transactionToUpdate.getAmount() - input.getAmount();
+                    }
+                    else{
+                        newAmount = budget.getAmount() - transactionToUpdate.getAmount() + input.getAmount();
+                    }
+                    budget.setAmount(newAmount);
+                    budgetService.updateBudget(budget.getId(), budget);
+                }
+            }
+
             transactionToUpdate.setLabel(input.getLabel());
             transactionToUpdate.setAmount(input.getAmount());
 
@@ -59,6 +87,23 @@ public class TransactionService {
 
     public void deleteTransaction(Long id) {
         try{
+            Transaction transaction = transactionRepository.findById(id).orElseThrow(() ->
+                    new CommonException(HttpStatus.NOT_FOUND, String.format("Transaction with ID %s was not found", id)));
+
+            Budget budget = budgetService.getBudgetById(transaction.getBudget().getId());
+
+            if(transaction.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
+                long newAmount;
+                if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
+                    newAmount = budget.getAmount() + transaction.getAmount();
+                }
+                else{
+                    newAmount = budget.getAmount() - transaction.getAmount();
+                }
+                budget.setAmount(newAmount);
+                budgetService.updateBudget(budget.getId(), budget);
+            }
+
             transactionRepository.deleteById(id);
         }catch(Exception e){
             throw new CommonException(HttpStatus.INTERNAL_SERVER_ERROR, "");
