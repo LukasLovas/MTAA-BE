@@ -32,7 +32,7 @@ public class BudgetService {
 
     public Budget getBudgetById(Long budgetId) {
         return budgetRepository.findById(budgetId).orElseThrow(() ->
-                new CommonException(HttpStatus.NOT_FOUND, "Budget with ID " + budgetId + "not found"));
+                new CommonException(HttpStatus.NOT_FOUND, "Budget with ID " + budgetId + " not found"));
     }
 
     public Budget updateBudget(Long id, BudgetDTO input) {
@@ -89,14 +89,18 @@ public class BudgetService {
     public void resetBudgets() {
         List<Budget> budgets = budgetRepository.findAll();
         LocalDate today = LocalDate.now();
-
+        int counter = 0;
         for (Budget budget : budgets) {
             if (shouldResetBudget(budget, today)) {
                 log.info("Resetting budget {} for user {}", budget.getLabel(), budget.getUser().getId());
+                counter++;
                 budget.setAmount(budget.getInitialAmount());
                 budget.setLastResetDate(today);
                 budgetRepository.save(budget);
             }
+        }
+        if (counter == 0){
+            log.info("No budgets were due for reseting.");
         }
     }
 

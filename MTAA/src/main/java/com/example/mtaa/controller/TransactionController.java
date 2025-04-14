@@ -91,9 +91,7 @@ public class TransactionController {
     })
     @PostMapping("")
     public ResponseEntity<Transaction> addTransaction(@RequestBody @Validated TransactionDTO transactionInput) {
-        transactionInput = currencyAPIService.convertCurrency(transactionInput);
-
-        return ResponseEntity.ok(transactionService.addTransaction(transactionInput));
+        return ResponseEntity.ok(transactionService.addTransaction(currencyAPIService.convertCurrency(transactionInput)));
     }
 
     @Operation(summary = "Retrieves Transaction by ID", description = "Queries the database for a transaction object based on ID from the user input.")

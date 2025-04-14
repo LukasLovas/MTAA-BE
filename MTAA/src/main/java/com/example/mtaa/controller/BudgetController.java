@@ -32,7 +32,7 @@ public class BudgetController {
             @ApiResponse(responseCode = "403", description = "User is not permitted to access this endpoint.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("")
+    @GetMapping("/byUsername")
     public List<Budget> getAllBudgets() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

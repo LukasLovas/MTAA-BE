@@ -22,30 +22,33 @@ public class TransactionService {
     private final BudgetService budgetService;
     private final CategoryService categoryService;
 
+    private final LocationService locationService;
+
     public TransactionService(TransactionRepository transactionRepository, UserService userService,
-                              BudgetService budgetService, CategoryService categoryService) {
+                              BudgetService budgetService, CategoryService categoryService, LocationService locationService) {
         this.transactionRepository = transactionRepository;
         this.userService = userService;
         this.budgetService = budgetService;
         this.categoryService = categoryService;
+        this.locationService = locationService;
     }
 
     public Transaction addTransaction(TransactionDTO transactionInput){
         Transaction transaction = convertToTransaction(transactionInput);
-
-        Budget budget = budgetService.getBudgetById(transactionInput.getBudgetId());
-        if(transaction.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
-            double newAmount;
-            if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
-                newAmount = budget.getAmount() - transaction.getAmount();
+        if (transactionInput.getBudgetId() != null){
+            Budget budget = budgetService.getBudgetById(transactionInput.getBudgetId());
+            if(transaction.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
+                double newAmount;
+                if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
+                    newAmount = budget.getAmount() - transaction.getAmount();
+                }
+                else{
+                    newAmount = budget.getAmount() + transaction.getAmount();
+                }
+                budget.setAmount(newAmount);
+                budgetService.updateBudget(budget.getId(), budget);
             }
-            else{
-                newAmount = budget.getAmount() + transaction.getAmount();
-            }
-            budget.setAmount(newAmount);
-            budgetService.updateBudget(budget.getId(), budget);
         }
-
         return transactionRepository.save(transaction);
     }
 
@@ -60,17 +63,19 @@ public class TransactionService {
             transactionToUpdate = transaction.get();
 
             if(!transactionToUpdate.getAmount().equals(input.getAmount())){
-                Budget budget = budgetService.getBudgetById(input.getBudgetId());
-                if(transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
-                    double newAmount;
-                    if(transactionToUpdate.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
-                        newAmount = budget.getAmount() + transactionToUpdate.getAmount() - input.getAmount();
+                if (input.getBudgetId() != null){
+                    Budget budget = budgetService.getBudgetById(input.getBudgetId());
+                    if(transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
+                        double newAmount;
+                        if(transactionToUpdate.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
+                            newAmount = budget.getAmount() + transactionToUpdate.getAmount() - input.getAmount();
+                        }
+                        else{
+                            newAmount = budget.getAmount() - transactionToUpdate.getAmount() + input.getAmount();
+                        }
+                        budget.setAmount(newAmount);
+                        budgetService.updateBudget(budget.getId(), budget);
                     }
-                    else{
-                        newAmount = budget.getAmount() - transactionToUpdate.getAmount() + input.getAmount();
-                    }
-                    budget.setAmount(newAmount);
-                    budgetService.updateBudget(budget.getId(), budget);
                 }
             }
 
@@ -183,17 +188,17 @@ public class TransactionService {
 
     private Transaction convertToTransaction(TransactionDTO input) {
         Transaction transaction = new Transaction();
-        transaction.setUser(userService.findCurrentUser());
+        transaction.setUser(userService.findUserById(input.getUserId()));
         transaction.setLabel(input.getLabel());
         transaction.setAmount(input.getAmount());
         transaction.setCreationDate(input.getTimestamp());
         transaction.setFilename(input.getFilename());
-        transaction.setBudget(budgetService.getBudgetById(input.getBudgetId()));
-        transaction.setCategory(categoryService.getCategoryById(input.getCategoryId()));
+        transaction.setBudget(input.getBudgetId() != null ? budgetService.getBudgetById(input.getBudgetId()) : null);
+        transaction.setCategory(input.getCategoryId() != null ? categoryService.getCategoryById(input.getCategoryId()) : null);
         transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum().toUpperCase()));
         transaction.setNote(input.getNote());
         transaction.setTransactionTypeEnum(TransactionTypeEnum.valueOf(input.getTransactionTypeEnum()));
-        transaction.setLocation(new Location(input.getLocationId(), null, null, null));
+        transaction.setLocation(input.getLocationId() != null ? locationService.getLocationById(input.getLocationId()) : null);
         return transaction;
     }
 
