@@ -4,6 +4,7 @@ import com.example.mtaa.dto.CurrencyDTO;
 import com.example.mtaa.dto.LoginDTO;
 import com.example.mtaa.dto.TokenDTO;
 import com.example.mtaa.dto.UserDTO;
+import com.example.mtaa.model.CommonException;
 import com.example.mtaa.model.User;
 import com.example.mtaa.service.UserService;
 import com.example.mtaa.utils.JwtUtil;
@@ -40,13 +41,17 @@ public class AuthController {
     })
     @PostMapping("/login")
     public ResponseEntity<TokenDTO> login(@RequestBody LoginDTO loginRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsername(),
-                        loginRequest.getPassword()
-                )
-        );
         User user = userService.findUserByUsername(loginRequest.getUsername());
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
+        }catch(BadCredentialsException e){
+            throw new CommonException(HttpStatus.BAD_REQUEST, "Credentials are incorrect.");
+        }
         String token = JwtUtil.generateToken(loginRequest.getUsername(), user.getId());
         return ResponseEntity.ok(new TokenDTO(token));
     }

@@ -13,9 +13,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-
     private final UserService userService;
-
     public CategoryService(CategoryRepository categoryRepository, UserService userService) {
         this.categoryRepository = categoryRepository;
         this.userService = userService;
@@ -31,8 +29,12 @@ public class CategoryService {
     }
 
     public Category addCategory(CategoryDTO categoryDTO) {
-        Category category = convertToCategory(categoryDTO);
-        return categoryRepository.save(category);
+        if (categoryRepository.findCategoryByLabelAndUser_Id(categoryDTO.getLabel(), categoryDTO.getUserId()).isEmpty()){
+            Category category = convertToCategory(categoryDTO);
+            return categoryRepository.save(category);
+        }else{
+            throw new CommonException(HttpStatus.BAD_REQUEST, "Category with label name " + categoryDTO.getLabel() + " already exists for user with id " + categoryDTO.getUserId());
+        }
     }
 
     public Category updateCategory(Long id, CategoryDTO categoryDTO) {

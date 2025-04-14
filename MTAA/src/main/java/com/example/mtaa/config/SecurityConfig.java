@@ -56,7 +56,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                                 "/webjars/**",
                                 "/auth/login",
                                 "/auth/logout",
-                                "/auth/register"
+                                "/auth/register",
+                                "/error"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

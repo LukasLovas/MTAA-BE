@@ -34,6 +34,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setUsername(userInput.getUsername());
         user.setPassword(passwordEncoder.encode(userInput.getPassword()));
+        user.setCurrency(CurrencyEnum.EUR);
         user.setEnabled(true);
         return userRepository.save(user);
     }
@@ -54,7 +55,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User findUserById(Long id){
-        return userRepository.findUserById(id).orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND,"User with ID " + id + "not found"));
+        return userRepository.findUserById(id).orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND,"User with ID " + id + " not found"));
     }
 
     public User findCurrentUser() {

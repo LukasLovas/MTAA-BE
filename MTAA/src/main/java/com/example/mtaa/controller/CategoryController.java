@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/category")
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -53,6 +53,7 @@ public class CategoryController {
     @Operation(summary = "Creates a category", description = "Creates and saves a new Category object into the database.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Created successfully", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Category with label name already exists for this user.", content = @Content),
             @ApiResponse(responseCode = "403", description = "User is not permitted to access this endpoint.", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
