@@ -35,7 +35,7 @@ public class Transaction {
 
     @NotNull
     @Column(name = "amount")
-    private Long amount;
+    private Double amount;
 
     @NotNull
     @Column(name = "date_created")

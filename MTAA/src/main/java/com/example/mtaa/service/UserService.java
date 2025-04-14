@@ -1,8 +1,10 @@
 package com.example.mtaa.service;
 
+import com.example.mtaa.dto.CurrencyDTO;
 import com.example.mtaa.dto.UserDTO;
 import com.example.mtaa.model.CommonException;
 import com.example.mtaa.model.User;
+import com.example.mtaa.model.enums.CurrencyEnum;
 import com.example.mtaa.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -59,5 +61,13 @@ public class UserService implements UserDetailsService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND,"User not found: " + username));
+    }
+
+    public User setCurrency(CurrencyDTO currencyDTO) {
+        User user = findCurrentUser();
+        user.setCurrency(CurrencyEnum.valueOf(currencyDTO.getCurrencyCode()));
+
+        userRepository.save(user);
+        return user;
     }
 }

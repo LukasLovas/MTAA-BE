@@ -77,10 +77,11 @@ public class BudgetService {
         budget.setUser(userService.findUserById(input.getUserId()));
         budget.setLabel(input.getLabel());
         budget.setInitialAmount(input.getAmount());
+        budget.setAmount(input.getAmount());
         budget.setIntervalValue(input.getIntervalValue());
         budget.setIntervalEnum(IntervalEnum.valueOf(input.getIntervalEnum()));
         budget.setStartDate(input.getStartDate());
-        budget.setLastResetDate(null);
+        budget.setLastResetDate(input.getStartDate());
         return budget;
     }
 

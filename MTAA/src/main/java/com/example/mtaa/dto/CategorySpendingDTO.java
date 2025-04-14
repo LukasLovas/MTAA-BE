@@ -14,6 +14,6 @@ public class CategorySpendingDTO {
     @JsonProperty("category_name")
     private String categoryName;
     @JsonProperty("amount")
-    private Long amount;
+    private double amount;
 
 }

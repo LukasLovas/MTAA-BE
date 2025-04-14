@@ -15,7 +15,7 @@ public class BudgetDTO {
     @JsonProperty("label")
     private String label;
     @JsonProperty("amount")
-    private Long amount;
+    private double amount;
     @JsonProperty("start_date")
     private LocalDate startDate;
     @JsonProperty("interval_value")
@@ -30,7 +30,7 @@ public class BudgetDTO {
     public BudgetDTO() {
     }
 
-    public BudgetDTO(Long userId, String label, Long amount, LocalDate startDate, Integer intervalValue, String intervalEnum) {
+    public BudgetDTO(Long userId, String label, double amount, LocalDate startDate, Integer intervalValue, String intervalEnum) {
         this.userId = userId;
         this.label = label;
         this.amount = amount;

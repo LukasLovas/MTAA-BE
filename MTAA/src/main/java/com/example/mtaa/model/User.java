@@ -1,5 +1,6 @@
 package com.example.mtaa.model;
 
+import com.example.mtaa.model.enums.CurrencyEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -25,6 +26,9 @@ public class User {
     @NotNull
     @Column(nullable = false)
     private String password;
+
+    @Column(name = "currency")
+    private CurrencyEnum currency;
 
     @NotNull
     @Column(nullable = false)

@@ -3,6 +3,7 @@ package com.example.mtaa.controller;
 import com.example.mtaa.dto.CategorySpendingDTO;
 import com.example.mtaa.dto.TransactionDTO;
 import com.example.mtaa.model.Transaction;
+import com.example.mtaa.service.CurrencyAPIService;
 import com.example.mtaa.service.TransactionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,9 +22,11 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
+    private final CurrencyAPIService currencyAPIService;
 
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionService transactionService, CurrencyAPIService currencyAPIService) {
         this.transactionService = transactionService;
+        this.currencyAPIService = currencyAPIService;
     }
 
     @Operation(summary = "Retrieves all Transaction objects.", description = "Queries the database for a complete list of all existing Transaction objects.")
@@ -88,6 +91,8 @@ public class TransactionController {
     })
     @PostMapping("")
     public ResponseEntity<Transaction> addTransaction(@RequestBody @Validated TransactionDTO transactionInput) {
+        transactionInput = currencyAPIService.convertCurrency(transactionInput);
+
         return ResponseEntity.ok(transactionService.addTransaction(transactionInput));
     }
 
@@ -124,6 +129,8 @@ public class TransactionController {
     })
     @PutMapping("{id}")
     public ResponseEntity<Transaction> updateTransaction(@PathVariable Long id, @RequestBody @Validated TransactionDTO transactionInput) {
+        transactionInput = currencyAPIService.convertCurrency(transactionInput);
+
         return ResponseEntity.ok(transactionService.updateTransaction(id, transactionInput));
     }
 

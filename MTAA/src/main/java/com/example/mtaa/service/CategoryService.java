@@ -49,7 +49,7 @@ public class CategoryService {
     private Category convertToCategory(CategoryDTO categoryDTO) {
         Category category = new Category();
         category.setLabel(categoryDTO.getLabel());
-        category.setUser(new com.example.mtaa.model.User(categoryDTO.getUserId(), null, null, true));
+        category.setUser(new com.example.mtaa.model.User(categoryDTO.getUserId(), null, null, null, true));
         return category;
     }
 

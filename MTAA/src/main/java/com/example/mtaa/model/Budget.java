@@ -26,10 +26,10 @@ public class Budget {
 
     private String label;
 
-    private Long amount;
+    private Double amount;
 
     @Column(name = "initial_amount")
-    private Long initialAmount;
+    private double initialAmount;
 
     @Column(name = "start_date")
     private LocalDate startDate;

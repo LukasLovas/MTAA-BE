@@ -35,7 +35,7 @@ public class TransactionService {
 
         Budget budget = budgetService.getBudgetById(transactionInput.getBudgetId());
         if(transaction.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
-            long newAmount;
+            double newAmount;
             if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
                 newAmount = budget.getAmount() - transaction.getAmount();
             }
@@ -62,7 +62,7 @@ public class TransactionService {
             if(!transactionToUpdate.getAmount().equals(input.getAmount())){
                 Budget budget = budgetService.getBudgetById(input.getBudgetId());
                 if(transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
-                    long newAmount;
+                    double newAmount;
                     if(transactionToUpdate.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
                         newAmount = budget.getAmount() + transactionToUpdate.getAmount() - input.getAmount();
                     }
@@ -93,7 +93,7 @@ public class TransactionService {
             Budget budget = budgetService.getBudgetById(transaction.getBudget().getId());
 
             if(transaction.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
-                long newAmount;
+                double newAmount;
                 if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
                     newAmount = budget.getAmount() + transaction.getAmount();
                 }
@@ -193,6 +193,7 @@ public class TransactionService {
         transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum().toUpperCase()));
         transaction.setNote(input.getNote());
         transaction.setTransactionTypeEnum(TransactionTypeEnum.valueOf(input.getTransactionTypeEnum()));
+        transaction.setLocation(new Location(input.getLocationId(), null, null, null));
         return transaction;
     }
 

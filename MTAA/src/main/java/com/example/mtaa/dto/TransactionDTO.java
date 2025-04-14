@@ -22,7 +22,7 @@ public class TransactionDTO {
 
     @NotNull
     @JsonProperty("amount")
-    private Long amount;
+    private double amount;
 
     @NotNull
     @JsonProperty("time")
@@ -59,11 +59,22 @@ public class TransactionDTO {
     @JsonProperty("filename")
     private String filename;
 
+    @NotNull
+    @JsonProperty("currency_code")
+    @Schema(
+            description = "Currency code",
+            allowableValues = {"BGN", "BRL", "CAD", "CHF", "CNY",
+                    "CZK", "DKK", "EUR", "GBP", "HKD", "HRK", "HUF", "IDR",
+                    "ILS", "INR", "ISK", "JPY", "KRW", "MXN", "MYR", "NOK",
+                    "NZD", "PHP", "PLN", "RON", "RUB", "SEK", "SGD", "THB",
+                    "TRY", "USD", "ZAR"}
+    )
+    private String currencyCode;
 
     public TransactionDTO() {
     }
 
-    public TransactionDTO(String label, Long amount, LocalDateTime timestamp, String transactionTypeEnum, Long category_id, Long budget_id, String frequencyEnum, String note, String filename) {
+    public TransactionDTO(String label, double amount, LocalDateTime timestamp, String transactionTypeEnum, Long category_id, Long budget_id, String frequencyEnum, String note, String filename, String currencyCode) {
         this.label = label;
         this.amount = amount;
         this.timestamp = timestamp;
@@ -73,5 +84,6 @@ public class TransactionDTO {
         this.frequencyEnum = frequencyEnum;
         this.note = note;
         this.filename = filename;
+        this.currencyCode = currencyCode;
     }
 }

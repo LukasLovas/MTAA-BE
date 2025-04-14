@@ -1,5 +1,6 @@
 package com.example.mtaa.controller;
 
+import com.example.mtaa.dto.CurrencyDTO;
 import com.example.mtaa.dto.LoginDTO;
 import com.example.mtaa.dto.TokenDTO;
 import com.example.mtaa.dto.UserDTO;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.web.bind.annotation.*;
@@ -69,5 +71,17 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<String> logout() {
         return ResponseEntity.ok("Logged out successfully.");
+    }
+
+    @Operation(summary = "Set default currency", description = "Default currency is set. All transactions in different currencies will be converted to this one.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Currency set successfully", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid currency code", content = @Content),
+            @ApiResponse(responseCode = "403", description = "User is not permitted to access this endpoint.", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @PostMapping("/currency")
+    public ResponseEntity<User> setCurrencyCode(@RequestBody CurrencyDTO currencyDTO) {
+        return new ResponseEntity<>(userService.setCurrency(currencyDTO), HttpStatus.OK);
     }
 }
