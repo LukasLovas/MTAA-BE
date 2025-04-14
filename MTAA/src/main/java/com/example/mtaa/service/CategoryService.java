@@ -14,8 +14,11 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    private final UserService userService;
+
+    public CategoryService(CategoryRepository categoryRepository, UserService userService) {
         this.categoryRepository = categoryRepository;
+        this.userService = userService;
     }
 
     public List<Category> getAllCategories(String username) {
@@ -33,15 +36,15 @@ public class CategoryService {
     }
 
     public Category updateCategory(Long id, CategoryDTO categoryDTO) {
-        Category categoryToUpdate = categoryRepository.findById(id).orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND,"Category not found"));
+        Category categoryToUpdate = categoryRepository.findById(id).orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND, "Category not found"));
         categoryToUpdate.setLabel(categoryDTO.getLabel());
         return categoryRepository.save(categoryToUpdate);
     }
 
     public void deleteCategory(Long id) {
-        try{
+        try {
             categoryRepository.deleteById(id);
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new CommonException(HttpStatus.INTERNAL_SERVER_ERROR, "");
         }
     }
@@ -49,7 +52,7 @@ public class CategoryService {
     private Category convertToCategory(CategoryDTO categoryDTO) {
         Category category = new Category();
         category.setLabel(categoryDTO.getLabel());
-        category.setUser(new com.example.mtaa.model.User(categoryDTO.getUserId(), null, null, null, true));
+        category.setUser(userService.findUserById(categoryDTO.getUserId()));
         return category;
     }
 
