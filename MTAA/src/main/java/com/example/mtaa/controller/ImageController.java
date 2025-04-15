@@ -52,10 +52,6 @@ public class ImageController {
 
         Bucket bucket = StorageClient.getInstance().bucket();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = (String) authentication.getPrincipal();
-        filename = "files/" + userId + "/" + filename;
-
         BlobInfo blobInfo = BlobInfo.newBuilder(
                         bucket.getName(),
                         filename
@@ -88,10 +84,6 @@ public class ImageController {
         }
 
         Bucket bucket = StorageClient.getInstance().bucket();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = (String) authentication.getPrincipal();
-        filename = "files/" + userId + "/" + filename;
 
         BlobInfo blobInfo = BlobInfo.newBuilder(bucket.getName(), filename).build();
         URL signedUrl = bucket.getStorage().signUrl(
