@@ -27,43 +27,38 @@ public class CurrencyAPIService {
         this.webClient = webClient;
     }
 
-    public TransactionDTO convertCurrency(TransactionDTO transactionDTO){
-        Optional<User> user = userRepository.findUserById(transactionDTO.getUserId());
-        if(user.isPresent()){
-            String targetCurrency = user.get().getCurrency().name();
-            String baseCurrency = transactionDTO.getCurrencyCode();
+    public TransactionDTO convertCurrency(TransactionDTO transactionDTO) {
+        User user = userRepository.findUserById(transactionDTO.getUserId()).orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND, "User not found"));
+        String targetCurrency = user.getCurrency().name();
+        String baseCurrency = transactionDTO.getCurrencyCode();
 
-            if(!baseCurrency.equals(targetCurrency)){
-                CurrencyResponse currencyResponse = getExchangeRate().block();
+        if (!baseCurrency.equals(targetCurrency)) {
+            CurrencyResponse currencyResponse = getExchangeRate().block();
 
-                if(currencyResponse == null || currencyResponse.getData() == null){
-                    throw new CommonException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve exchange rate");
-                }
-
-                if(baseCurrency.equals("USD")){
-                    transactionDTO.setAmount(transactionDTO.getAmount() * currencyResponse.getData().get(targetCurrency));
-                }
-                else if(targetCurrency.equals("USD")){
-                    transactionDTO.setAmount(transactionDTO.getAmount() / currencyResponse.getData().get(baseCurrency));
-                }
-                else{
-                    transactionDTO.setAmount(transactionDTO.getAmount() * (currencyResponse.getData().get(targetCurrency) / currencyResponse.getData().get(baseCurrency)));
-                }
+            if (currencyResponse == null || currencyResponse.getData() == null) {
+                throw new CommonException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve exchange rate");
             }
 
-            return transactionDTO;
+            if (baseCurrency.equals("USD")) {
+                transactionDTO.setAmount(transactionDTO.getAmount() * currencyResponse.getData().get(targetCurrency));
+            } else if (targetCurrency.equals("USD")) {
+                transactionDTO.setAmount(transactionDTO.getAmount() / currencyResponse.getData().get(baseCurrency));
+            } else {
+                transactionDTO.setAmount(transactionDTO.getAmount() * (currencyResponse.getData().get(targetCurrency) / currencyResponse.getData().get(baseCurrency)));
+            }
         }
-        else throw new CommonException(HttpStatus.NOT_FOUND, "User not found");
+
+        return transactionDTO;
     }
 
-    public Mono<CurrencyResponse> getExchangeRate() {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/latest")
-                        .queryParam("apikey", apiKey)
-                        .build())
-                .retrieve()
-                .bodyToMono(CurrencyResponse.class);
-    }
+public Mono<CurrencyResponse> getExchangeRate() {
+    return webClient.get()
+            .uri(uriBuilder -> uriBuilder
+                    .path("/latest")
+                    .queryParam("apikey", apiKey)
+                    .build())
+            .retrieve()
+            .bodyToMono(CurrencyResponse.class);
+}
 
 }
