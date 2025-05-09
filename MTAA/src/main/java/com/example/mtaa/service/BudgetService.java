@@ -39,7 +39,7 @@ public class BudgetService {
         Budget budget = budgetRepository.findById(id).orElseThrow(() ->
                 new CommonException(HttpStatus.NOT_FOUND, String.format("Budget with ID %s was not found", id)));
         budget.setLabel(input.getLabel());
-        budget.setAmount(input.getAmount());
+        budget.setInitialAmount(input.getAmount());
         budget.setIntervalValue(input.getIntervalValue());
         budget.setIntervalEnum(IntervalEnum.valueOf(input.getIntervalEnum()));
         budget.setStartDate(input.getStartDate());
