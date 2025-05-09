@@ -74,7 +74,7 @@ public class BudgetService {
 
     private Budget convertToBudget(BudgetDTO input) {
         Budget budget = new Budget();
-        budget.setUser(userService.findUserById(input.getUserId()));
+        budget.setUser(userService.findUserById(userService.findCurrentUser().getId()));
         budget.setLabel(input.getLabel());
         budget.setInitialAmount(input.getAmount());
         budget.setAmount(input.getAmount());
