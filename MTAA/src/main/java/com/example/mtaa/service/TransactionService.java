@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class TransactionService {
         Transaction transaction = convertToTransaction(transactionInput);
         if (transactionInput.getBudgetId() != null){
             Budget budget = budgetService.getBudgetById(transactionInput.getBudgetId());
-            if(transaction.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
+            if(transaction.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))){
                 double newAmount;
                 if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
                     newAmount = budget.getAmount() - transaction.getAmount();
@@ -65,7 +66,7 @@ public class TransactionService {
             if(!transactionToUpdate.getAmount().equals(input.getAmount())){
                 if (input.getBudgetId() != null){
                     Budget budget = budgetService.getBudgetById(input.getBudgetId());
-                    if(transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
+                    if(transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))){
                         double newAmount;
                         if(transactionToUpdate.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
                             newAmount = budget.getAmount() + transactionToUpdate.getAmount() - input.getAmount();
@@ -97,7 +98,7 @@ public class TransactionService {
 
             Budget budget = budgetService.getBudgetById(transaction.getBudget().getId());
 
-            if(transaction.getCreationDate().isAfter(budget.getLastResetDate().atStartOfDay())){
+            if(transaction.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))){
                 double newAmount;
                 if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
                     newAmount = budget.getAmount() + transaction.getAmount();

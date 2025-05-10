@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -88,7 +89,7 @@ public class BudgetService {
     @Transactional
     public void resetBudgets() {
         List<Budget> budgets = budgetRepository.findAll();
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
         int counter = 0;
         for (Budget budget : budgets) {
             if (shouldResetBudget(budget, today)) {
@@ -104,7 +105,7 @@ public class BudgetService {
         }
     }
 
-    private boolean shouldResetBudget(Budget budget, LocalDate today) {
+    private boolean shouldResetBudget(Budget budget, LocalDateTime today) {
         if (budget.getLastResetDate() == null) {
             return true;
         }

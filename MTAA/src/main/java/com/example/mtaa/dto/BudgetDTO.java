@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @JsonTypeName("BudgetDTO")
@@ -16,7 +17,7 @@ public class BudgetDTO {
     @JsonProperty("amount")
     private double amount;
     @JsonProperty("start_date")
-    private LocalDate startDate;
+    private LocalDateTime startDate;
     @JsonProperty("interval_value")
     private Integer intervalValue;
     @JsonProperty("interval_enum")
@@ -29,7 +30,7 @@ public class BudgetDTO {
     public BudgetDTO() {
     }
 
-    public BudgetDTO(String label, double amount, LocalDate startDate, Integer intervalValue, String intervalEnum) {
+    public BudgetDTO(String label, double amount, LocalDateTime startDate, Integer intervalValue, String intervalEnum) {
         this.label = label;
         this.amount = amount;
         this.startDate = startDate;
