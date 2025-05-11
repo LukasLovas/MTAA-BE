@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -32,7 +33,7 @@ public class Budget {
     private double initialAmount;
 
     @Column(name = "start_date")
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "interval_value")
     private Integer intervalValue;
@@ -41,5 +42,5 @@ public class Budget {
     private IntervalEnum intervalEnum;
 
     @Column(name = "last_reset_date")
-    private LocalDate lastResetDate;
+    private LocalDateTime lastResetDate;
 }

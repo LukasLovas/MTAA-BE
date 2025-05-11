@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -39,7 +40,7 @@ public class BudgetService {
         Budget budget = budgetRepository.findById(id).orElseThrow(() ->
                 new CommonException(HttpStatus.NOT_FOUND, String.format("Budget with ID %s was not found", id)));
         budget.setLabel(input.getLabel());
-        budget.setAmount(input.getAmount());
+        budget.setInitialAmount(input.getAmount());
         budget.setIntervalValue(input.getIntervalValue());
         budget.setIntervalEnum(IntervalEnum.valueOf(input.getIntervalEnum()));
         budget.setStartDate(input.getStartDate());
@@ -74,7 +75,7 @@ public class BudgetService {
 
     private Budget convertToBudget(BudgetDTO input) {
         Budget budget = new Budget();
-        budget.setUser(userService.findUserById(input.getUserId()));
+        budget.setUser(userService.findUserById(userService.findCurrentUser().getId()));
         budget.setLabel(input.getLabel());
         budget.setInitialAmount(input.getAmount());
         budget.setAmount(input.getAmount());
@@ -88,7 +89,7 @@ public class BudgetService {
     @Transactional
     public void resetBudgets() {
         List<Budget> budgets = budgetRepository.findAll();
-        LocalDate today = LocalDate.now();
+        LocalDateTime today = LocalDateTime.now();
         int counter = 0;
         for (Budget budget : budgets) {
             if (shouldResetBudget(budget, today)) {
@@ -104,7 +105,7 @@ public class BudgetService {
         }
     }
 
-    private boolean shouldResetBudget(Budget budget, LocalDate today) {
+    private boolean shouldResetBudget(Budget budget, LocalDateTime today) {
         if (budget.getLastResetDate() == null) {
             return true;
         }
