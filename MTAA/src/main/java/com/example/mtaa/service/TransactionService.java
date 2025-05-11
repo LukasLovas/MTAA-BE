@@ -36,8 +36,8 @@ public class TransactionService {
 
     public Transaction addTransaction(TransactionDTO transactionInput){
         Transaction transaction = convertToTransaction(transactionInput);
-        if (transactionInput.getBudgetId() != null){
-            Budget budget = budgetService.getBudgetById(transactionInput.getBudgetId());
+        if (transaction.getBudget() != null){
+            Budget budget = transaction.getBudget();
             if(transaction.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))){
                 double newAmount;
                 if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
@@ -63,15 +63,14 @@ public class TransactionService {
         if (transaction.isPresent()) {
             transactionToUpdate = transaction.get();
 
-            if(!transactionToUpdate.getAmount().equals(input.getAmount())){
-                if (input.getBudgetId() != null){
-                    Budget budget = budgetService.getBudgetById(input.getBudgetId());
-                    if(transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))){
+            if (!transactionToUpdate.getAmount().equals(input.getAmount())) {
+                if (input.getBudget() != null) {
+                    Budget budget = getBudgetByLabelAndUserId(input.getBudget(), input.getUserId());
+                    if (transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))) {
                         double newAmount;
-                        if(transactionToUpdate.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
+                        if (transactionToUpdate.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)) {
                             newAmount = budget.getAmount() + transactionToUpdate.getAmount() - input.getAmount();
-                        }
-                        else{
+                        } else {
                             newAmount = budget.getAmount() - transactionToUpdate.getAmount() + input.getAmount();
                         }
                         budget.setAmount(newAmount);
@@ -187,6 +186,10 @@ public class TransactionService {
         return transactionRepository.findByBudgetId(budgetId);
     }
 
+    private Budget getBudgetByLabelAndUserId(String label, Long userId) {
+        return budgetService.getBudgetByLabel(label, userId);
+    }
+
     private Transaction convertToTransaction(TransactionDTO input) {
         Transaction transaction = new Transaction();
         transaction.setUser(userService.findUserById(input.getUserId()));
@@ -194,8 +197,8 @@ public class TransactionService {
         transaction.setAmount(input.getAmount());
         transaction.setCreationDate(input.getTimestamp());
         transaction.setFilename(input.getFilename());
-        transaction.setBudget(input.getBudgetId() != null ? budgetService.getBudgetById(input.getBudgetId()) : null);
-        transaction.setCategory(input.getCategoryId() != null ? categoryService.getCategoryById(input.getCategoryId()) : null);
+        transaction.setBudget(input.getBudget() != null ? budgetService.getBudgetByLabel(input.getBudget(), input.getUserId()) : null);
+        transaction.setCategory(input.getCategory() != null ? categoryService.getCategoryByLabel(input.getCategory(), input.getUserId()) : null);
         transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum().toUpperCase()));
         transaction.setNote(input.getNote());
         transaction.setTransactionTypeEnum(TransactionTypeEnum.valueOf(input.getTransactionTypeEnum()));
@@ -210,8 +213,8 @@ public class TransactionService {
         transactionDTO.setAmount(transaction.getAmount());
         transactionDTO.setTimestamp(transaction.getCreationDate());
         transactionDTO.setFilename(transaction.getFilename());
-        transactionDTO.setBudgetId(transaction.getBudget().getId());
-        transactionDTO.setCategoryId(transaction.getCategory().getId());
+        transactionDTO.setBudget(transaction.getBudget().getLabel());
+        transactionDTO.setCategory(transaction.getCategory().getLabel());
         transactionDTO.setFrequencyEnum(transaction.getFrequencyEnum().name());
         transactionDTO.setNote(transaction.getNote());
         transactionDTO.setTransactionTypeEnum(transaction.getTransactionTypeEnum().name());

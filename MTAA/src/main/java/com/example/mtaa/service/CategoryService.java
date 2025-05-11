@@ -28,6 +28,14 @@ public class CategoryService {
                 new CommonException(HttpStatus.NOT_FOUND, "Category with ID " + id + " not found"));
     }
 
+    public Category getCategoryByLabel(String label, Long userId) {
+        if (categoryRepository.findCategoryByLabelAndUser_Id(label, userId).isPresent()) {
+            return categoryRepository.findCategoryByLabelAndUser_Id(label, userId).get();
+        } else {
+            throw new CommonException(HttpStatus.NOT_FOUND, "Category with label " + label + " not found");
+        }
+    }
+
     public Category addCategory(CategoryDTO categoryDTO) {
         if (categoryRepository.findCategoryByLabelAndUser_Id(categoryDTO.getLabel(), categoryDTO.getUserId()).isEmpty()){
             Category category = convertToCategory(categoryDTO);

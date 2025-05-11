@@ -36,6 +36,14 @@ public class BudgetService {
                 new CommonException(HttpStatus.NOT_FOUND, "Budget with ID " + budgetId + " not found"));
     }
 
+    public Budget getBudgetByLabel(String label, Long userId) {
+        Budget budget = budgetRepository.findByLabelAndUser_Id(label, userId);
+        if (budget == null) {
+            throw new CommonException(HttpStatus.NOT_FOUND, "Budget with label " + label + " not found");
+        }
+        return budget;
+    }
+
     public Budget updateBudget(Long id, BudgetDTO input) {
         Budget budget = budgetRepository.findById(id).orElseThrow(() ->
                 new CommonException(HttpStatus.NOT_FOUND, String.format("Budget with ID %s was not found", id)));
