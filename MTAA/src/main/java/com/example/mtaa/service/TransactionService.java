@@ -2,10 +2,13 @@ package com.example.mtaa.service;
 
 import com.example.mtaa.dto.CategorySpendingDTO;
 import com.example.mtaa.dto.TransactionDTO;
+import com.example.mtaa.event.TransactionChangedEvent;
 import com.example.mtaa.model.*;
 import com.example.mtaa.model.enums.FrequencyEnum;
 import com.example.mtaa.model.enums.TransactionTypeEnum;
 import com.example.mtaa.repository.TransactionRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -22,16 +25,23 @@ public class TransactionService {
     private final UserService userService;
     private final BudgetService budgetService;
     private final CategoryService categoryService;
-
     private final LocationService locationService;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public TransactionService(TransactionRepository transactionRepository, UserService userService,
-                              BudgetService budgetService, CategoryService categoryService, LocationService locationService) {
+    @Autowired
+    public TransactionService(
+            TransactionRepository transactionRepository,
+            UserService userService,
+            BudgetService budgetService,
+            CategoryService categoryService,
+            LocationService locationService,
+            ApplicationEventPublisher eventPublisher) {
         this.transactionRepository = transactionRepository;
         this.userService = userService;
         this.budgetService = budgetService;
         this.categoryService = categoryService;
         this.locationService = locationService;
+        this.eventPublisher = eventPublisher;
     }
 
     public Transaction addTransaction(TransactionDTO transactionInput){
@@ -50,7 +60,12 @@ public class TransactionService {
                 budgetService.updateBudget(budget.getId(), budget);
             }
         }
-        return transactionRepository.save(transaction);
+        Transaction savedTransaction = transactionRepository.save(transaction);
+
+        // Vysielame udalosť namiesto priameho volania webSocketHandler
+        eventPublisher.publishEvent(new TransactionChangedEvent(this, transaction.getUser().getId()));
+
+        return savedTransaction;
     }
 
     public Transaction getTransactionById(Long transactionId) {
@@ -84,6 +99,9 @@ public class TransactionService {
             transactionToUpdate.setAmount(input.getAmount());
 
             transactionRepository.save(transactionToUpdate);
+
+            eventPublisher.publishEvent(new TransactionChangedEvent(this, transactionToUpdate.getUser().getId()));
+
         } else {
             throw new CommonException(HttpStatus.NOT_FOUND, String.format("Transaction with ID %s was not found.", id));
         }
@@ -92,28 +110,27 @@ public class TransactionService {
     }
 
     public void deleteTransaction(Long id) {
-        try{
-            Transaction transaction = transactionRepository.findById(id).orElseThrow(() ->
-                    new CommonException(HttpStatus.NOT_FOUND, String.format("Transaction with ID %s was not found", id)));
+        Transaction transaction = getTransactionById(id);
+        Long userId = transaction.getUser().getId();
 
-            Budget budget = budgetService.getBudgetById(transaction.getBudget().getId());
+        Budget budget = budgetService.getBudgetById(transaction.getBudget().getId());
 
-            if(transaction.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))){
-                double newAmount;
-                if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
-                    newAmount = budget.getAmount() + transaction.getAmount();
-                }
-                else{
-                    newAmount = budget.getAmount() - transaction.getAmount();
-                }
-                budget.setAmount(newAmount);
-                budgetService.updateBudget(budget.getId(), budget);
+        if(transaction.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))){
+            double newAmount;
+            if(transaction.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
+                newAmount = budget.getAmount() + transaction.getAmount();
             }
-
-            transactionRepository.deleteById(id);
-        }catch(Exception e){
-            throw new CommonException(HttpStatus.INTERNAL_SERVER_ERROR, "");
+            else{
+                newAmount = budget.getAmount() - transaction.getAmount();
+            }
+            budget.setAmount(newAmount);
+            budgetService.updateBudget(budget.getId(), budget);
         }
+
+        transactionRepository.deleteById(id);
+
+        // Vysielame udalosť namiesto priameho volania webSocketHandler
+        eventPublisher.publishEvent(new TransactionChangedEvent(this, userId));
     }
 
     public List<Transaction> getAllTransactions(String username) {
@@ -202,20 +219,4 @@ public class TransactionService {
         transaction.setLocation(input.getLocationId() != null ? locationService.getLocationById(input.getLocationId()) : null);
         return transaction;
     }
-
-    private TransactionDTO convertToTransactionDTO(Transaction transaction) {
-        TransactionDTO transactionDTO = new TransactionDTO();
-        transactionDTO.setUserId(transaction.getUser().getId());
-        transactionDTO.setLabel(transaction.getLabel());
-        transactionDTO.setAmount(transaction.getAmount());
-        transactionDTO.setTimestamp(transaction.getCreationDate());
-        transactionDTO.setFilename(transaction.getFilename());
-        transactionDTO.setBudgetId(transaction.getBudget().getId());
-        transactionDTO.setCategoryId(transaction.getCategory().getId());
-        transactionDTO.setFrequencyEnum(transaction.getFrequencyEnum().name());
-        transactionDTO.setNote(transaction.getNote());
-        transactionDTO.setTransactionTypeEnum(transaction.getTransactionTypeEnum().name());
-        return transactionDTO;
-    }
-
 }

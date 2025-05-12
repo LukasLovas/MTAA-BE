@@ -89,4 +89,9 @@ public class AuthController {
     public ResponseEntity<User> setCurrencyCode(@RequestBody CurrencyDTO currencyDTO) {
         return new ResponseEntity<>(userService.setCurrency(currencyDTO), HttpStatus.OK);
     }
+
+    @GetMapping("/ping")
+    public ResponseEntity<Void> ping(){
+        return ResponseEntity.ok().build();
+    }
 }
