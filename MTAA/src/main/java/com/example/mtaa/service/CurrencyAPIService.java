@@ -19,16 +19,16 @@ public class CurrencyAPIService {
     @Value("${api.key}")
     private String apiKey;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final WebClient webClient;
 
-    public CurrencyAPIService(UserRepository userRepository, WebClient webClient) {
-        this.userRepository = userRepository;
+    public CurrencyAPIService(UserService userService, WebClient webClient) {
+        this.userService = userService;
         this.webClient = webClient;
     }
 
     public TransactionDTO convertCurrency(TransactionDTO transactionDTO) {
-        User user = userRepository.findUserById(transactionDTO.getUserId()).orElseThrow(() -> new CommonException(HttpStatus.NOT_FOUND, "User not found"));
+        User user = userService.findCurrentUser();
         String targetCurrency = user.getCurrency().name();
         String baseCurrency = transactionDTO.getCurrencyCode();
 

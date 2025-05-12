@@ -13,10 +13,6 @@ import java.time.LocalDateTime;
 public class TransactionDTO {
 
     @NotNull
-    @JsonProperty("user_id")
-    private Long userId;
-
-    @NotNull
     @JsonProperty("label")
     private String label;
 
@@ -74,8 +70,7 @@ public class TransactionDTO {
     public TransactionDTO() {
     }
 
-    public TransactionDTO(@NotNull Long userId, @NotNull String label, @NotNull double amount, @NotNull LocalDateTime timestamp, @NotNull String transactionTypeEnum, String category, String budget, Long locationId, @NotNull String frequencyEnum, String note, String filename, @NotNull String currencyCode) {
-        this.userId = userId;
+    public TransactionDTO(@NotNull String label, @NotNull double amount, @NotNull LocalDateTime timestamp, @NotNull String transactionTypeEnum, String category, String budget, Long locationId, @NotNull String frequencyEnum, String note, String filename, @NotNull String currencyCode) {
         this.label = label;
         this.amount = amount;
         this.timestamp = timestamp;

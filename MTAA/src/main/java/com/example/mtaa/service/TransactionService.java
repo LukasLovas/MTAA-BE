@@ -80,7 +80,8 @@ public class TransactionService {
 
             if(!transactionToUpdate.getAmount().equals(input.getAmount())){
                 if (input.getBudget() != null) {
-                    Budget budget = getBudgetByLabelAndUserId(input.getBudget(), input.getUserId());
+                    Long userId = userService.findCurrentUser().getId();
+                    Budget budget = getBudgetByLabelAndUserId(input.getBudget(), userId);
                     if(transactionToUpdate.getCreationDate().isAfter(budget.getLastResetDate().with(LocalTime.MIN))){
                         double newAmount;
                         if(transactionToUpdate.getTransactionTypeEnum().equals(TransactionTypeEnum.EXPENSE)){
@@ -208,14 +209,15 @@ public class TransactionService {
     }
 
     private Transaction convertToTransaction(TransactionDTO input) {
+        User user = userService.findCurrentUser();
         Transaction transaction = new Transaction();
-        transaction.setUser(userService.findUserById(input.getUserId()));
+        transaction.setUser(user);
         transaction.setLabel(input.getLabel());
         transaction.setAmount(input.getAmount());
         transaction.setCreationDate(input.getTimestamp());
         transaction.setFilename(input.getFilename());
-        transaction.setBudget(input.getBudget() != null ? budgetService.getBudgetByLabel(input.getBudget(), input.getUserId()) : null);
-        transaction.setCategory(input.getCategory() != null ? categoryService.getCategoryByLabel(input.getCategory(), input.getUserId()) : null);
+        transaction.setBudget(input.getBudget() != null ? budgetService.getBudgetByLabel(input.getBudget(), user.getId()) : null);
+        transaction.setCategory(input.getCategory() != null ? categoryService.getCategoryByLabel(input.getCategory(), user.getId()) : null);
         transaction.setFrequencyEnum(FrequencyEnum.valueOf(input.getFrequencyEnum().toUpperCase()));
         transaction.setNote(input.getNote());
         transaction.setTransactionTypeEnum(TransactionTypeEnum.valueOf(input.getTransactionTypeEnum()));
