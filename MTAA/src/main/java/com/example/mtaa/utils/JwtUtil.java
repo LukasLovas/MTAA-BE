@@ -1,7 +1,11 @@
 package com.example.mtaa.utils;
 
+import com.example.mtaa.model.User;
+import com.example.mtaa.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
@@ -48,6 +52,22 @@ public class JwtUtil {
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;
+        }
+    }
+
+    @Component
+    public class JwtUser {
+
+        private static UserRepository userRepository;
+
+        @Autowired
+        public JwtUser(UserRepository userRepository) {
+            JwtUser.userRepository = userRepository;
+        }
+
+        public static String getUsernameByUserId(Long userId) {
+            User user = userRepository.findById(userId).orElse(null);
+            return user != null ? user.getUsername() : null;
         }
     }
 }

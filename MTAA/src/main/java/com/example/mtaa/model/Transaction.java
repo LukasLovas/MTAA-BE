@@ -2,6 +2,11 @@ package com.example.mtaa.model;
 
 import com.example.mtaa.model.enums.FrequencyEnum;
 import com.example.mtaa.model.enums.TransactionTypeEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -37,6 +42,7 @@ public class Transaction {
     @Column(name = "amount")
     private Double amount;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @NotNull
     @Column(name = "date_created")
     private LocalDateTime creationDate;
